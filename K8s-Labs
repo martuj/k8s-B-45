@@ -744,4 +744,128 @@ kubectl delete -f pv-pod.yaml
 kubectl delete -f pv-claim.yaml
 kubectl delete -f pv-volume.yaml
 =============================================================
----------------------------------------------
+-------------------------------------------------------------
+-------------------------------------------------------------
+Static and Dynamic volume on Bootstap Cluster
+-----------------------------------------------------------------
+Step-1 Create 2gb volume by manually in the same region where you have created your cluster
+step-2 install csi drivers as below
+kubectl apply -k "github.com/kubernetes-sigs/aws-ebs-csi-driver/deploy/kubernetes/overlays/stable/?ref=release-1.30"
+kubectl get pod -n kube-system
+or
+kubectl get pods -n kube-system | grep ebs
+step3- create and Attach the IAM policy "AmazonEBSCSIDriverPolicy" to the EC2 instance role.
+
+root@Controlplain:~# vi static-pv.yml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: static-pv
+spec:
+  capacity:
+    storage: 2Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  csi:
+    driver: ebs.csi.aws.com
+    volumeHandle: vol-0e6b46068fc18bcdb   # <-- Your EBS volume ID
+    fsType: ext4
+  persistentVolumeReclaimPolicy: Retain
+
+# kubectl apply -f static-pv.yml
+
+root@Controlplain:~# vi static-pvc.yml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: static-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+
+# kubectl apply -f static-pvc.yml
+
+root@Controlplain:~# vi pod-staticpv.yml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: app-static
+spec:
+  containers:
+    - name: myapp
+      image: nginx
+      volumeMounts:
+        - mountPath: "/data"
+          name: static-storage
+  volumes:
+    - name: static-storage
+      persistentVolumeClaim:
+        claimName: static-pvc
+
+# kubectl apply -f pod-staticpv.yml
+-------------------------------------------
+First you need to delete Pod,pvc and PV
+kubectl delete -f pod-staticpv.yml
+kubectl delete -f static-pvc.yml
+kubectl delete -f static-pv.yml
+------------------------------------------------
+Dynamic volume
+------------------------------------------------
+root@Controlplain:~# vi dy-pv.yml
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: gp3-sc
+provisioner: ebs.csi.aws.com
+parameters:
+  type: gp3
+  fsType: ext4
+reclaimPolicy: Delete
+volumeBindingMode: WaitForFirstConsumer
+
+# kubectl apply -f dy-pv.yml
+
+root@Controlplain:~# vi  dy-pvc.yml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: dynamic-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 3Gi
+  storageClassName: gp3-sc
+
+# kubectl apply -f dy-pvc.yml
+
+root@Controlplain:~# vi dypod.yml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: app-dynamic
+spec:
+  containers:
+    - name: myapp
+      image: nginx
+      volumeMounts:
+        - mountPath: "/data"
+          name: dynamic-storage
+  volumes:
+    - name: dynamic-storage
+      persistentVolumeClaim:
+        claimName: dynamic-pvc
+
+# kubectl apply -f dypod.yml
+---------------------------------
+Delete fisrt pod,pvc,pv
+kubectl delete -f dypod.yml
+kubectl delete -f dy-pvc.yml
+kubectl delete -f dy-pv.yml
+---------------------------------------
+
