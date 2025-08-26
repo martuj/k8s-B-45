@@ -326,7 +326,8 @@ spec:
 kubectl create -f limit.yml 
 kubectl get jobs
 kubectl get pods
-
+kubectl patch job etl-job -p '{"spec":{"suspend":true}}'
+kubectl patch job etl-job -p '{"spec":{"suspend":false}}'
 -----------------------------------------------------------------------
 Task 2: Cronjobs 
 -----------------------------------------------------------------------
@@ -365,6 +366,60 @@ cronjob-hello-27991419-lz69c   0/1     Completed   0          42s
 
 kubectl logs cronjob-hello-27991419-lz69c 
 Hello World!
+
+-----------------------------------
+Task 2.1
+
+controlplane:~$ cat cron.yml 
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: log-rotation-cron
+spec:
+  schedule: "*/1 * * * *"    # Every 1 min 
+  jobTemplate:
+    spec:
+      completions: 4
+      parallelism: 2
+      backoffLimit: 1
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+          - name: logrotate
+            image: alpine:3.19
+            command: ["sh", "-c", echo "Hello wolrd"]
+
+controlplane:~$ 
+
+Task 2.2
+
+controlplane:~$ cat his.yml 
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: cleanup-cron
+spec:
+  schedule: "*/1 * * * *"   # Every 1 min
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 120 # Clean up after 120 mins
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+          - name: cleaner
+            image: alpine:3.19
+            command: ["sh", "-c", "rm -rf /tmp/*"]
+
+
+successfulJobsHistoryLimit: 2 → keeps last 2 successful runs only.
+failedJobsHistoryLimit: 1 → keeps last failed run only.
+ttlSecondsAfterFinished: 120 → delete jobs after 120 mins.
+
+
 
 ==============================================================================
 
