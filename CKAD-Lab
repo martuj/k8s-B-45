@@ -419,7 +419,28 @@ successfulJobsHistoryLimit: 2 → keeps last 2 successful runs only.
 failedJobsHistoryLimit: 1 → keeps last failed run only.
 ttlSecondsAfterFinished: 120 → delete jobs after 120 mins.
 
+Task 2.3 
 
+controlplane:~$ cat cc.yml 
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: api-poller-cron
+spec:
+  schedule: "*/1 * * * *"   # Every 1 mins
+  concurrencyPolicy: Forbid  # Prevents overlapping jobs
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+          - name: poller
+            image: alpine:3.19
+            command: ["sh", "-c", "rm -rf /tmp/*"]
+
+controlplane:~$ 
 
 ==============================================================================
 
