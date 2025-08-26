@@ -280,6 +280,53 @@ Describe job to see
 kubectl describe jobs jobs-hello
 
 kubectl delete -f job.yaml
+-----------------------------------
+Task1.2
+
+controlplane:~$ vi pp.yml 
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: etl-job
+spec:
+  completions: 10         # Need 10 successful runs
+  parallelism: 2          # Max 2 pods run at a time
+  backoffLimit: 4
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: etl
+        image: python:3.11
+        command: ["python", "-c", "print('ETL job running...')"]
+
+kubectl create -f pp.yml
+kubectl get jobs
+kubectl get pods
+---------------------------------------
+Task1.3
+
+controlplane:~$ vi limit.yml 
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: data-import-job
+spec:
+  backoffLimit: 2
+  activeDeadlineSeconds: 60   # Job killed if it runs longer than 1 mins
+  ttlSecondsAfterFinished: 120 # Clean up 2 mins after completion
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: importer
+        image: python:3.11
+        command: ["python", "-c", "print('Importing data...')"]
+
+kubectl create -f limit.yml 
+kubectl get jobs
+kubectl get pods
+
 -----------------------------------------------------------------------
 Task 2: Cronjobs 
 -----------------------------------------------------------------------
