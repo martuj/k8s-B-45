@@ -528,9 +528,6 @@ apt update && apt install curl -y
 curl 'http://localhost:80/app.txt'
 
 -------------------------------------------------------------
-Task: 2  init-container
-
-
  
 ==============================================================================
 Lab 5: Liveness, Readiness and Startup Probes
@@ -616,10 +613,6 @@ kubectl describe svc readiness-svc
 End point is gone
 
 --------------------------------------------------------------------
-Task 2 Startup probe
-----------------------------------------------------------------------
-
-
 
 ===============================================================================
 Lab 6  Blue/Green Deployment on Kubernetes 
