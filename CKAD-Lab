@@ -419,8 +419,6 @@ kubectl run web --image=nginx -n dev
 kubectl run web --image=nginx -n test
 kubectl run web --image=nginx -n prod
 
-
-kubectl get pods -n dev,test,prod
 kubectl get pods -A  
 
 ------------------------------------------
