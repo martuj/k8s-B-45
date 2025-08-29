@@ -555,12 +555,13 @@ spec:
         - /liveness
       initialDelaySeconds: 5
       periodSeconds: 5
-	  
+
+kubectl apply -f liveness-pod.yaml
 kubectl get pods	  
-kubectl describe pod liveness-exec
+kubectl describe pod liveness-pod
  
 now login to container and delete following file
-kubectl exec -it liveness-pod sh 
+kubectl exec -it liveness-pod -- sh 
 # rm -f /liveness
 # exit
 
@@ -598,18 +599,13 @@ kubectl get pods
 
 login inside pod and delete folloing file 
 
-kubectl exec -it readiness-pod bash 
+kubectl exec -it readiness-pod -- bash 
 # rm -f /readiness
 # exit
 
 View the Pod events and see that readiness probe has failed
 kubectl describe pods readiness-pod
-
-now describe service
-kubectl describe svc readiness-svc
-
-End point is gone
-
+ 
 --------------------------------------------------------------------
 
 ===============================================================================
@@ -711,14 +707,11 @@ some time will to blue deployment web page, some time green webpage
 
 If you delete the web-green deployment, load-balancer will start sending traffic only to the blue pods
 
-
 kubectl describe svc web-app-svc-lb
 
 ==================================================================================
 
-
 ===================================================================================
-
 
 Lab 7: ConfigMap
 
@@ -760,7 +753,8 @@ spec:
         configMapKeyRef:
            name: my-configmap
            key: mydata
-		   
+
+kubectl apply -f cm-pod.yaml
 kubectl exec -it cm-pod -- bash
 echo $hlo
 hello_world
@@ -820,7 +814,7 @@ spec:
 
 kubectl create -f redis-pod.yaml
 read config map's file 
-kubectl exec -it redis cat /redis-master/redis.conf
+kubectl exec -it redis -- cat /redis-master/redis.conf
 
 -------------------------------------------------------------------------------
 Task 3: Creating a Secret
