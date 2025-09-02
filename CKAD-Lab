@@ -1333,6 +1333,9 @@ Task 3: Test whether you are able to do a GET request to Kubernetes API
 kubectl run test --image=nginx -n purple
 kubectl exec -it -n purple test -- /bin/bash 
 curl -v --cacert /var/run/secrets/kubernetes.io/serviceaccount/ca.crt -H "Authorization: Bearer $(cat /var/run/secrets/kubernetes.io/serviceaccount/token)" https://kubernetes.default/api/v1/namespaces/purple/pods 
+## Note: It sends an authenticated HTTPS request to the Kubernetes API server using the pod’s ServiceAccount credentials and CA cert, 
+##to list all pods in the purple namespace.
+
 
 vi pod-sa.yaml
 apiVersion: v1
