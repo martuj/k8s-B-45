@@ -1204,7 +1204,7 @@ metadata:
   name: read-secrets-global
 subjects:
 - kind: User
-  name: riya
+  name: test
   apiGroup: rbac.authorization.k8s.io
 roleRef:
   kind: ClusterRole
@@ -1217,8 +1217,8 @@ kubectl apply -f clusterrolebinding.yaml
 To check the created cluster role binding:
 kubectl get clusterrolebinding | grep read-secrets-global
 
-To check the permissions of the riya user across all namespaces:
-kubectl auth can-i get secret --as riya -A
+To check the permissions of the test user across all namespaces:
+kubectl auth can-i get secret --as test -A
 
 ==================================================================================
 ==================================================================================
