@@ -669,7 +669,7 @@ kubectl get svc
 access you application
 
 
-to it canary deployment deploy following yaml file
+to it Green deployment deploy following yaml file
 
 vi web-green.yaml
 
@@ -709,6 +709,9 @@ If you delete the web-green deployment, load-balancer will start sending traffic
 
 kubectl describe svc web-app-svc-lb
 
+# Now delete blue deployment you can only access green deployment
+kubectl delete -f web-blue.yaml
+kubectl get po
 ==================================================================================
 
 ===================================================================================
