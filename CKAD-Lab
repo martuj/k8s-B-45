@@ -1456,9 +1456,9 @@ spec:
   - name: mycontainer
     image: nginx
   tolerations:
-   - key: run
+   - key: key1
      operator: Equal
-     value: mypod
+     value: value1
      effect: NoSchedule
 
 Remove the taint effect from the node that was previously tainted.
@@ -1579,7 +1579,7 @@ spec:
             - pa-nginx-app
         topologyKey: kubernetes.io/hostname
 
-kubectl create -f pod-affinity.yaml
+kubectl create -f aff-pa-pod2.yaml
 
 kubectl get pods -o wide
 both pod are in same node
