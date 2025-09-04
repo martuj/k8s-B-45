@@ -1736,7 +1736,32 @@ mychart/
 |   `-- tests
 |       `-- test-connection.yaml
 `-- values.yaml
+###############################################
+1. Chart.yaml
+Metadata about the chart (name, version, description, maintainers, dependencies).
+Tells Helm what this chart is, which version to deploy, and for what application version.
 
+2. charts/
+Contains dependent charts (subcharts).
+Example: If your app needs Redis or MySQL, you can add their Helm charts here.
+Bundle dependencies with your chart for microservices or 3-tier apps.
+
+3. templates/
+This folder has all Kubernetes manifests as Helm templates (.yaml with variables).
+a) NOTES.txt
+Instructions shown after helm install or helm upgrade.
+Guides developers on how to access the deployed app.
+b) _helpers.tpl
+A file containing reusable template functions/macros.
+h) tests/test-connection.yaml
+Helm test hook: Runs a Pod to check if deployment is successful.
+Run helm test mychart to validate if app is reachable.
+
+4. values.yaml
+Default configuration values for all templates.
+users customize deployments without touching templates.
+Customize replicas, images, ports, etc..
+###############################################
 
 Dry- Run
 helm install --debug --dry-run mychart ./mychart/
