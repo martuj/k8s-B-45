@@ -255,7 +255,7 @@ metadata:
 spec:
   completions: 10         # Need 10 successful runs
   parallelism: 2          # Max 2 pods run at a time
-  backoffLimit: 4
+  backoffLimit: 4		# if a Pod within the Job fails, Kubernetes will attempt to restart it up to four additional times. then Job will be marked as failed.
   template:
     spec:
       restartPolicy: Never
