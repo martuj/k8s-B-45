@@ -795,16 +795,17 @@ kind: Pod
 metadata:
   name: app-static
 spec:
+  volumes:
+    - name: static-storage
+      persistentVolumeClaim:
+        claimName: static-pvc
   containers:
     - name: myapp
       image: nginx
       volumeMounts:
         - mountPath: "/data"
           name: static-storage
-  volumes:
-    - name: static-storage
-      persistentVolumeClaim:
-        claimName: static-pvc
+
 
 # kubectl apply -f pod-staticpv.yml
 -------------------------------------------
@@ -850,16 +851,17 @@ kind: Pod
 metadata:
   name: app-dynamic
 spec:
+  volumes:
+    - name: dynamic-storage
+      persistentVolumeClaim:
+        claimName: dynamic-pvc  
   containers:
     - name: myapp
       image: nginx
       volumeMounts:
         - mountPath: "/data"
           name: dynamic-storage
-  volumes:
-    - name: dynamic-storage
-      persistentVolumeClaim:
-        claimName: dynamic-pvc
+  
 
 # kubectl apply -f dypod.yml
 ---------------------------------
